@@ -3,39 +3,41 @@ $(document).ready(function() {
         var $button = $(this);
         var buttonWidth = $button.outerWidth();
         var buttonHeight = $button.outerHeight();
-        var navbarWidth = $('nav').width();
-        var navbarHeight = $('nav').height();
+        var windowWidth = $(window).width();
+        var windowHeight = $(window).height();
 
         // Get the current position of the button
-        var currentLeft = $button.offset().left - $button.parent().offset().left;
-        var currentTop = $button.offset().top - $button.parent().offset().top;
+        var currentLeft = $button.offset().left;
+        var currentTop = $button.offset().top;
 
-        // Calculate new position
         var newLeft, newTop;
         do {
-            newLeft = Math.random() * (navbarWidth - buttonWidth);
-            newTop = Math.random() * (navbarHeight - buttonHeight);
-        } while (Math.abs(newLeft - currentLeft) < 50 && Math.abs(newTop - currentTop) < 50);
+            newLeft = Math.random() * (windowWidth - buttonWidth);
+            newTop = Math.random() * (windowHeight - buttonHeight);
+        } while (
+            Math.abs(newLeft - currentLeft) < 100 && 
+            Math.abs(newTop - currentTop) < 100
+        );
 
-        // Ensure the new position is within the navbar
-        newLeft = Math.max(25, Math.min(newLeft, navbarWidth - buttonWidth));
-        newTop = Math.max(25, Math.min(newTop, navbarHeight - buttonHeight));
+        newLeft = Math.max(0, Math.min(newLeft, windowWidth - buttonWidth));
+        newTop = Math.max(0, Math.min(newTop, windowHeight - buttonHeight));
 
-        // Apply the new position
         $button.css({
-            position: 'absolute',
-            left: currentLeft + 'px',
-            top: currentTop + 'px'
-        });
-
-        // Trigger reflow
-        $button[0].offsetHeight;
-
-        // Animate to new position
-        $button.css({
-            left: newLeft + 'px',
-            top: newTop + 'px',
-            transition: 'all 0.3s ease-out'
+            position: 'fixed',
+            left: currentLeft,
+            top: currentTop,
+            zIndex: 1000
+        }).animate({
+            left: newLeft,
+            top: newTop
+        }, {
+            duration: 300,
+            easing: 'easeOutQuad'
         });
     });
+
+    // Add custom easing
+    jQuery.easing.easeOutQuad = function (x, t, b, c, d) {
+        return -c *(t/=d)*(t-2) + b;
+    };
 });
